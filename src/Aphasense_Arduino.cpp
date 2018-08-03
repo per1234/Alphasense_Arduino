@@ -7,13 +7,25 @@ OPCN2::OPCN2(uint8_t chip_select)
   _CS = chip_select;
 
   // Set up SPI
+#if defined(SPARK)
   SPI.begin(_CS);
   SPI.setBitOrder(MSBFIRST);
   SPI.setDataMode(SPI_MODE1);
   SPI.setClockSpeed(1000000);
+#else //defined((SPARK)
+  SPI.begin();
+  SPI.beginTransaction(SPISettings(1000000, MSBFIRST, SPI_MODE1));
+#endif  //defined((SPARK)
 
   // Set the firmware version
+#if defined(SPARK)
   _fv = this->read_information_string().replace(".", "").trim().substring(24, 26).toInt();
+#else //defined((SPARK)
+  String informationString=this->read_information_string();
+  informationString.replace(".", "");
+  informationString.trim();
+  _fv=informationString.substring(24, 26).toInt();
+#endif  //defined((SPARK)
 
   if (_fv < 18) {
     firm_ver.major = _fv;
@@ -580,7 +592,11 @@ String OPCN2::read_serial_number()
     digitalWrite(this->_CS, HIGH);
   }
 
+#if defined(SPARK)
   result = result.trim();
+#else //defined(SPARK)
+  result.trim();
+#endif  //defined(SPARK)
 
   return result;
 }

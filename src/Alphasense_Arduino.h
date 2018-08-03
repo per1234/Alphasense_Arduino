@@ -8,7 +8,12 @@
 #define Opcn2_h
 
 // Includes
+#if defined(SPARK)
 #include "application.h"
+#else //defined((SPARK)
+#include "Arduino.h"
+#include "SPI.h"
+#endif  //defined((SPARK)
 
 struct Status {
     int fanON;
